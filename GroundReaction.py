@@ -15,7 +15,10 @@ class GroundReactionEstimator:
         self.LeftToeNorm = self.Vel_Norm(self.LeftToeVel)
         self.Detect_Th = 1.2
         self.contact = []
-        self.Contact_detection()
+        self.RightFoot, self.LeftFoot = self.Contact_detection()
+
+    def Get_Single_Contact(self,index):
+        return self.RightFoot[index], self.LeftFoot[index]
 
     def Vel_Norm(self, Vel):
         Vel_norm = []
@@ -49,8 +52,8 @@ class GroundReactionEstimator:
                     else: contact_l[i] = 1
 
                 if contact_l[i] == 0 and contact_r[i] == 0: contact_r[i] = 1
-        print(contact_r)
-        print(contact_l)
+        return contact_r, contact_l
+
 
 
 
