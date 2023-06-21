@@ -6,14 +6,15 @@ from Anthropometric import Estimator
 from InverseDynamic import InverseDynamicsSolver
 from scipy.spatial.transform import Rotation
 from SMPL_Vis import SMPLVis, smpl4vis
-from Preprocess import KinematicsProcesser,center_of_mass_acceleration
+from Preprocess import KinematicsProcesser,center_of_mass_acceleration, get_joint_position
 from GroundReaction import GroundReactionEstimator
 import cv2
 import keyboard
-print('test')
+
 if __name__ == "__main__":
-    MvnxLoader = LoadMvnx('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\Test-006.mvnx')
+    MvnxLoader = LoadMvnx('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\Test-006.mvnx')
     MvnxOutput, length = MvnxLoader.extract_info()
+    data = get_joint_position(MvnxOutput,'')
     smpl_poses, global_rots = MvnxLoader.xsens2smpl()
     KinematicsProcesser = KinematicsProcesser(MvnxOutput)
     Acc,AngularVel,AngularAcc,CenterPos,RLG,Vel,RightToeVel,LeftToeVel= KinematicsProcesser.extract()
@@ -28,7 +29,7 @@ if __name__ == "__main__":
     #beta = [list(np.random.rand(10))]
     beta = [[-0.8738482 , -0.74419683,  0.26313874,  0.06141186,  0.04800983, 0.13762029, -0.06491265,  0.02792327, -0.01361502, -0.04689167]]
     #beta = [[0.05921802, -0.36343077,  0.09036009,  0.10710271,  0.02527221, 0.08302245, -0.07464162,  0.0130268 , -0.01174876, -0.04193153]]
-    VideoLoader = LoadVideo('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\GX011768.MP4','00:57:55:17')
+    VideoLoader = LoadVideo('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\GX011768.MP4','00:57:55:17')
     VideoTc = VideoLoader.get_times()
     vis = SMPLVis(beta, 'male')
     out = cv2.VideoWriter('outpy.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (640*2, 480))

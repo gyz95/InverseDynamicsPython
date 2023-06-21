@@ -6,6 +6,12 @@ from InverseDynamic import InverseDynamicsSolver
 from GroundReaction import GroundReactionEstimator
 from scipy.spatial.transform import Rotation
 
+def get_joint_position(data,segment):
+    output = []
+    for i in range(len(data)):
+        output.append(data[i]['position']['segment'])
+    return  output
+
 def center_of_mass_acceleration(acceleration, omega, alpha, r, R_L_G):
     acceleration = np.transpose(acceleration, (2, 0, 1))
     omega = np.transpose(omega, (2, 0, 1))
