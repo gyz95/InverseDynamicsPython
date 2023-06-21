@@ -37,6 +37,7 @@ class LoadOptitrack:
 
     def extract_info(self):
         return self.Data_dict, len(self.Data)
+
     def process_raw(self):
         data = self.rawdata['Bone']
         col_names = []
@@ -195,6 +196,9 @@ class LoadMvnx:
         self.pc_tc = list(self.data.ms)
         self.overall_output = {}
         self.run()
+
+    def get_foot_contacts(self):
+        return self.data.footContacts
 
     def get_time_single(self,raw=False,index=0):
         if raw:

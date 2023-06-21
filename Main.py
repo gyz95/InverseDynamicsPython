@@ -12,9 +12,8 @@ import cv2
 import keyboard
 
 if __name__ == "__main__":
-    MvnxLoader = LoadMvnx('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\Test-006.mvnx')
+    MvnxLoader = LoadMvnx('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\Test-006.mvnx')
     MvnxOutput, length = MvnxLoader.extract_info()
-    data = get_joint_position(MvnxOutput,'')
     smpl_poses, global_rots = MvnxLoader.xsens2smpl()
     KinematicsProcesser = KinematicsProcesser(MvnxOutput)
     Acc,AngularVel,AngularAcc,CenterPos,RLG,Vel,RightToeVel,LeftToeVel= KinematicsProcesser.extract()
@@ -22,14 +21,14 @@ if __name__ == "__main__":
     segment_mass, segment_length, centerofmass, seg_ori, inertiatensor = AnthropometricEstimator.get()
     CM_acc = center_of_mass_acceleration(Acc,AngularVel,AngularAcc,centerofmass,RLG)
     joint_force, joint_moment = InverseDynamicsSolver(centerofmass,seg_ori,inertiatensor,segment_mass,RLG,CM_acc,AngularVel,AngularAcc).get_force_moment()
-    GRFM = GroundReactionEstimator(Vel, RightToeVel, LeftToeVel)
+    GRFM = GroundReactionEstimator(Vel, RightToeVel, LeftToeVel, XsensContact=MvnxLoader.get_foot_contacts(), Use_Xsens=True)
     #OpLoader = LoadOptitrack('C:/Users\gyz95\OneDrive\Desktop\Docs\InverseDynamics\picking_0615.csv',subject_id=0)
     #OpOutput, length = OpLoader.extract_info()
     #smpl_poses, global_rots = OpLoader.op2smpl()
     #beta = [list(np.random.rand(10))]
     beta = [[-0.8738482 , -0.74419683,  0.26313874,  0.06141186,  0.04800983, 0.13762029, -0.06491265,  0.02792327, -0.01361502, -0.04689167]]
     #beta = [[0.05921802, -0.36343077,  0.09036009,  0.10710271,  0.02527221, 0.08302245, -0.07464162,  0.0130268 , -0.01174876, -0.04193153]]
-    VideoLoader = LoadVideo('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\GX011768.MP4','00:57:55:17')
+    VideoLoader = LoadVideo('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\GX011768.MP4','00:57:55:17')
     VideoTc = VideoLoader.get_times()
     vis = SMPLVis(beta, 'male')
     out = cv2.VideoWriter('outpy.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (640*2, 480))
