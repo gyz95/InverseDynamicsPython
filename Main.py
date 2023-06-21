@@ -10,7 +10,7 @@ from Preprocess import KinematicsProcesser,center_of_mass_acceleration
 from GroundReaction import GroundReactionEstimator
 import cv2
 import keyboard
-
+print('test')
 if __name__ == "__main__":
     MvnxLoader = LoadMvnx('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\Test-006.mvnx')
     MvnxOutput, length = MvnxLoader.extract_info()
