@@ -27,7 +27,7 @@ def smpl4vis(smpl_poses,global_rot,source='xsens'):
 class SMPLVis:
     def __init__(self, beta, gender, wireframe=False):
         self.gender = gender
-        model_folder =  'C:/Users\gyz95\OneDrive\Desktop\Docs\InverseDynamics\human_models'
+        model_folder =  'C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\human_models'
         self.model = smplx.create(model_folder,
                                   model_type='smpl',
                                   gender=gender,
