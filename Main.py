@@ -8,6 +8,7 @@ from scipy.spatial.transform import Rotation
 from SMPL_Vis import SMPLVis, smpl4vis
 from Preprocess import KinematicsProcesser,center_of_mass_acceleration, get_joint_position
 from GroundReaction import GroundReactionEstimator
+from MuscleForces import L4L5_LinearOptimization_Bean_Schultz
 import cv2
 import keyboard
 
@@ -21,6 +22,11 @@ if __name__ == "__main__":
     segment_mass, segment_length, centerofmass, seg_ori, inertiatensor = AnthropometricEstimator.get()
     CM_acc = center_of_mass_acceleration(Acc,AngularVel,AngularAcc,centerofmass,RLG)
     joint_force, joint_moment = InverseDynamicsSolver(centerofmass,seg_ori,inertiatensor,segment_mass,RLG,CM_acc,AngularVel,AngularAcc).get_force_moment()
+    #print(np.shape(RLG))
+    #print(np.shape(RLG[:][0]))
+    #print(np.shape(joint_moment))
+    L4L5Compression, L4L5LateralShear, L4L5AnteriorShear, muscles_forces = L4L5_LinearOptimization_Bean_Schultz(joint_moment, joint_force, RLG, MvnxLoader.theta_h)
+
     GRFM = GroundReactionEstimator(Vel, RightToeVel, LeftToeVel, XsensContact=MvnxLoader.get_foot_contacts(), Use_Xsens=True)
     #OpLoader = LoadOptitrack('C:/Users\gyz95\OneDrive\Desktop\Docs\InverseDynamics\picking_0615.csv',subject_id=0)
     #OpOutput, length = OpLoader.extract_info()
@@ -56,6 +62,7 @@ if __name__ == "__main__":
         cv2.imshow('Vis',image)
         cv2.waitKey(1)
         out.write(image)
+        print(L4L5Compression[i])
         if keyboard.is_pressed('q'): break
     # When everything done, release the video capture and video write objects
     out.release()

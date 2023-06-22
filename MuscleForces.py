@@ -1,7 +1,14 @@
 import numpy as np
 from scipy.optimize import linprog
 
-def L4L5_LinearOptimization_Bean_Schultz(L5S1_Moment, L5S1_Force, R_Pelvic_Global, Theta_H):
+def L4L5_LinearOptimization_Bean_Schultz(L5S1_Moment, L5S1_Force, R_Pelvic_Global, Theta_H, Gender = 'male'):
+    R_Pelvic_Global = np.asarray(R_Pelvic_Global)[:,0,:,:]
+    R_Pelvic_Global = np.transpose(R_Pelvic_Global,(1,2,0))
+    L5S1_Moment = np.asarray(L5S1_Moment)[:,0,:]
+    #L5S1_Moment = np.transpose(L5S1_Moment,(1,0))
+    L5S1_Force = np.asarray(L5S1_Force)[:,0,:]
+    #L5S1_Force = np.transpose(L5S1_Force,(1,0))
+    Theta_H = np.asarray(Theta_H)
     # Find Moment components
     L4L5_Moment_local = np.zeros((3, np.shape(L5S1_Moment)[1]))
     L5S1_Force_local = np.zeros((3, np.shape(L5S1_Moment)[1]))
@@ -18,10 +25,8 @@ def L4L5_LinearOptimization_Bean_Schultz(L5S1_Moment, L5S1_Force, R_Pelvic_Globa
     L4L5_Normal_force = L5S1_Force_local[1, :]
     L4L5_Lateral_force = L5S1_Force_local[2, :]
 
-    # Muscle properties
-    gender = 1  # male
 
-    if gender == 1:  # if male
+    if Gender == 'male':  # if male
         # Physiological cross-sectional area in cm^2
         A_ES = 31  # Erector Spinae
         A_LD = 3  # Latissimus Dorsi
@@ -203,7 +208,6 @@ def L4L5_LinearOptimization_Bean_Schultz(L5S1_Moment, L5S1_Force, R_Pelvic_Globa
             L4L5LateralShear[i] = res.x[11]
             L4L5AnteriorShear[i] = res.x[12]
             muscles_forces[:, i] = res.x[:13]
-            print(res.x[10])
 
     return L4L5Compression, L4L5LateralShear, L4L5AnteriorShear, muscles_forces
 
