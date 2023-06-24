@@ -13,7 +13,7 @@ import cv2
 import keyboard
 
 if __name__ == "__main__":
-    MvnxLoader = LoadMvnx('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\Test-006.mvnx')
+    MvnxLoader = LoadMvnx('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\Guoyang-lightlift-3.mvnx')
     MvnxOutput, length = MvnxLoader.extract_info()
     smpl_poses, global_rots = MvnxLoader.xsens2smpl()
     KinematicsProcesser = KinematicsProcesser(MvnxOutput)
@@ -28,13 +28,16 @@ if __name__ == "__main__":
     L4L5Compression, L4L5LateralShear, L4L5AnteriorShear, muscles_forces = L4L5_LinearOptimization_Bean_Schultz(joint_moment, joint_force, RLG, MvnxLoader.theta_h)
 
     GRFM = GroundReactionEstimator(Vel, RightToeVel, LeftToeVel, XsensContact=MvnxLoader.get_foot_contacts(), Use_Xsens=True)
+    GRF_r, GRF_l, GRM_r, GRM_l = GRFM.GRFM_Estimation(centerofmass, seg_ori, inertiatensor, segment_mass, RLG, CM_acc, AngularVel, AngularAcc)
+
+    '''
     #OpLoader = LoadOptitrack('C:/Users\gyz95\OneDrive\Desktop\Docs\InverseDynamics\picking_0615.csv',subject_id=0)
     #OpOutput, length = OpLoader.extract_info()
     #smpl_poses, global_rots = OpLoader.op2smpl()
     #beta = [list(np.random.rand(10))]
     beta = [[-0.8738482 , -0.74419683,  0.26313874,  0.06141186,  0.04800983, 0.13762029, -0.06491265,  0.02792327, -0.01361502, -0.04689167]]
     #beta = [[0.05921802, -0.36343077,  0.09036009,  0.10710271,  0.02527221, 0.08302245, -0.07464162,  0.0130268 , -0.01174876, -0.04193153]]
-    VideoLoader = LoadVideo('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\GX011768.MP4','00:57:55:17')
+    VideoLoader = LoadVideo('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\GX011768.MP4','00:57:55:17')
     VideoTc = VideoLoader.get_times()
     vis = SMPLVis(beta, 'male')
     out = cv2.VideoWriter('outpy.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (640*2, 480))
@@ -62,9 +65,9 @@ if __name__ == "__main__":
         cv2.imshow('Vis',image)
         cv2.waitKey(1)
         out.write(image)
-        print(L4L5Compression[i])
         if keyboard.is_pressed('q'): break
     # When everything done, release the video capture and video write objects
     out.release()
     # Closes all the frames
     cv2.destroyAllWindows()
+'''
