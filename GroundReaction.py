@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from scipy.optimize import minimize
+from scipy.optimize import minimize, linprog
 
 class GroundReactionEstimator:
     def __init__(self, Vel, RightToeVel, LeftToeVel, XsensContact, Use_Xsens=True):
@@ -19,8 +19,6 @@ class GroundReactionEstimator:
         self.Detect_Th = 1.2
         self.RightFoot, self.LeftFoot = self.Contact_detection(XsensContact,Use_Xsens)
         self.contact = np.asarray([self.RightFoot, self.LeftFoot]).transpose(1,0)
-
-
 
     def build_pair_pd(self):
         pd_pairs = {}
@@ -108,7 +106,6 @@ class GroundReactionEstimator:
         L_Foot_origin = np.zeros((3, frames))
 
         for frame in range(frames):
-            print(frame)
             # Net GRF and GRM
             Net_GRF[:, frame] = 0
             Net_GRM[:, frame] = 0
@@ -246,10 +243,6 @@ class GroundReactionEstimator:
                     GRM_r[:, frame] = res.x[3:6]
                     GRF_l[:, frame] = res.x[6:9]
                     GRM_l[:, frame] = res.x[9:12]
-            print(GRF_l[:,frame])
-            print(GRF_r[:,frame])
-            print('-----------------------------------------')
-
         return GRF_r, GRF_l, GRM_r, GRM_l
 
     def Get_Single_Contact(self,index):

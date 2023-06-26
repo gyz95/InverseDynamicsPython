@@ -25,7 +25,15 @@ class InverseDynamicsSolver:
         self.pd_pairs = self.build_pair_pd()
         self.joint_force, self.joint_moment = self.solver()
 
-    def get_force_moment(self):
+    def conversion(self):
+        for frame in range(np.shape(self.joint_moment)[2]):
+            for segment in range(np.shape(self.joint_moment)[1]):
+                self.joint_moment[:,segment,frame] = np.matmul(self.R_L_G[:,:,segment,frame].transpose(),self.joint_moment[:,segment,frame])
+                self.joint_force[:,segment,frame] = np.matmul(self.R_L_G[:,:,segment,frame].transpose(),self.joint_force[:,segment,frame])
+
+    def get_force_moment(self,convert=True):
+        if convert == True:
+            self.conversion()
         return self.joint_force, self.joint_moment
 
     def build_pair_pd(self):

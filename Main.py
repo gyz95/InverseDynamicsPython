@@ -11,9 +11,12 @@ from GroundReaction import GroundReactionEstimator
 from MuscleForces import L4L5_LinearOptimization_Bean_Schultz
 import cv2
 import keyboard
+import pandas as pd
 
 if __name__ == "__main__":
-    MvnxLoader = LoadMvnx('C:/Users\gyz95\OneDrive\Desktop\InverseDynamicsPython\data\Guoyang-lightlift-3.mvnx')
+    bodysegments = ['L5/S1','C7/T1','Right Shoulder','Right Elbow','Right Wrist','Left Shoulder','Left Elbow','Left Wrist']
+    direction = ['x','y','z']
+    MvnxLoader = LoadMvnx('C:/Users\gyz95\PycharmProjects\InverseDynamicsPython\data\Guoyang-lightlift-3.mvnx')
     MvnxOutput, length = MvnxLoader.extract_info()
     smpl_poses, global_rots = MvnxLoader.xsens2smpl()
     KinematicsProcesser = KinematicsProcesser(MvnxOutput)
@@ -21,14 +24,50 @@ if __name__ == "__main__":
     AnthropometricEstimator = Estimator(BodyWeight = 90, BodyHeight = 1.7, Gender='male')
     segment_mass, segment_length, centerofmass, seg_ori, inertiatensor = AnthropometricEstimator.get()
     CM_acc = center_of_mass_acceleration(Acc,AngularVel,AngularAcc,centerofmass,RLG)
-    joint_force, joint_moment = InverseDynamicsSolver(centerofmass,seg_ori,inertiatensor,segment_mass,RLG,CM_acc,AngularVel,AngularAcc).get_force_moment()
+    joint_force, joint_moment = InverseDynamicsSolver(centerofmass,seg_ori,inertiatensor,segment_mass,RLG,CM_acc,AngularVel,AngularAcc).get_force_moment(convert=False)
     #print(np.shape(RLG))
     #print(np.shape(RLG[:][0]))
     #print(np.shape(joint_moment))
+    '''
+    output_jm = {}
+    for segment in range(len(bodysegments)):
+        for dire in range(3):
+            output_jm[bodysegments[segment]+'_'+direction[dire]] = list(joint_moment[dire,segment,:])
+    output_jm = pd.DataFrame.from_dict(output_jm)
+    output_jm.to_csv('joint_moment.csv',index=False)
+
+    output_jf = {}
+    for segment in range(len(bodysegments)):
+        for dire in range(3):
+            output_jf[bodysegments[segment]+'_'+direction[dire]] = list(joint_force[dire,segment,:])
+    output_jf = pd.DataFrame.from_dict(output_jf)
+    output_jf.to_csv('joint_force.csv',index=False)
+    '''
+
     L4L5Compression, L4L5LateralShear, L4L5AnteriorShear, muscles_forces = L4L5_LinearOptimization_Bean_Schultz(joint_moment, joint_force, RLG, MvnxLoader.theta_h)
 
     GRFM = GroundReactionEstimator(Vel, RightToeVel, LeftToeVel, XsensContact=MvnxLoader.get_foot_contacts(), Use_Xsens=True)
     GRF_r, GRF_l, GRM_r, GRM_l = GRFM.GRFM_Estimation(centerofmass, seg_ori, inertiatensor, segment_mass, RLG, CM_acc, AngularVel, AngularAcc)
+    GRFM = {}
+    GRFM['GRF_Left_X'] = GRF_l[0]
+    GRFM['GRF_Left_Y'] = GRF_l[1]
+    GRFM['GRF_Left_Z'] = GRF_l[2]
+
+    GRFM['GRF_Right_X'] = GRF_r[0]
+    GRFM['GRF_Right_Y'] = GRF_r[1]
+    GRFM['GRF_Right_Z'] = GRF_r[2]
+
+    GRFM['GRM_Left_X'] = GRM_l[0]
+    GRFM['GRM_Left_Y'] = GRM_l[1]
+    GRFM['GRM_Left_Z'] = GRM_l[2]
+
+    GRFM['GRM_Right_X'] = GRM_r[0]
+    GRFM['GRM_Right_Y'] = GRM_r[1]
+    GRFM['GRM_Right_Z'] = GRM_r[2]
+
+    GRFM = pd.DataFrame.from_dict(GRFM)
+    print(GRFM)
+    GRFM.to_csv('GRFM.csv',index=False)
 
     '''
     #OpLoader = LoadOptitrack('C:/Users\gyz95\OneDrive\Desktop\Docs\InverseDynamics\picking_0615.csv',subject_id=0)
